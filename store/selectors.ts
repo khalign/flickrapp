@@ -19,7 +19,7 @@ export const photosSelector = selector<photoProps[]>({
           const { server, id, secret } = img;
           return {
             ...img,
-            url: `https://live.staticflickr.com/${server}/${id}_${secret}_q.jpg`,
+            url: `https://live.staticflickr.com/${server}/${id}_${secret}.jpg`,
           };
         })
       : [];

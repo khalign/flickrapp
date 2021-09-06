@@ -22,6 +22,7 @@ import NotFoundScreen from "../screens/NotFoundScreen";
 import TabOneScreen from "../screens/TabOneScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
 import Home from "../screens/Home";
+import Photo from "../screens/Photo";
 
 import {
   RootStackParamList,
@@ -58,6 +59,12 @@ function RootNavigator() {
         name="Home"
         component={Home}
         options={{ title: "Flickr App" }}
+      />
+
+      <Stack.Screen
+        name="Photo"
+        component={Photo}
+        options={{ title: "Image Details" }}
       />
 
       <Stack.Screen

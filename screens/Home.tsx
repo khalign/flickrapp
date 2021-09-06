@@ -8,6 +8,7 @@ import {
   FlatList,
   Image,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 
 import { photoProps, photosAtom, photosData } from "../store/atoms";
@@ -29,7 +30,6 @@ const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
         setLoading(true);
         const { data } = await flickr.search(tag, pg);
         const { photo, page } = data.photos;
-        setLoading(false);
 
         pg
           ? setPhotos((oldData) => {
@@ -38,6 +38,7 @@ const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
               return { page, photo: [...old, ...photo] };
             })
           : setPhotos({ photo, page });
+        setLoading(false);
       }
     },
     [tag]
@@ -46,18 +47,16 @@ const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
   React.useEffect(() => {
     const delay = setTimeout(() => {
       getPhotos();
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(delay);
   }, [tag]);
 
   const renderPhotos = ({ item }: { item: photoProps }) => {
     return (
-      <Image
-        source={{ uri: item.url }}
-        resizeMode={"contain"}
-        style={styles.img}
-      />
+      <Pressable onPress={() => navigation.navigate("Photo", { item })}>
+        <Image source={{ uri: item.url }} style={styles.img} />
+      </Pressable>
     );
   };
 
