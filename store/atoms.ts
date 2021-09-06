@@ -8,10 +8,8 @@ export type photoProps = {
 };
 
 export type photosData = {
-  photos: {
-    page: number;
-    photo: photoProps[];
-  };
+  page: number;
+  photo: photoProps[];
 };
 
 export const photosAtom = atom<photosData | null>({

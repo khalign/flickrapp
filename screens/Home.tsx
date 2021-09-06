@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useSetRecoilState, useRecoilState, useRecoilValue } from "recoil";
 import {
   StyleSheet,
   Text,
@@ -6,30 +7,46 @@ import {
   TextInput,
   FlatList,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import { useSetRecoilState, useRecoilState, useRecoilValue } from "recoil";
 
-import { RootStackScreenProps } from "../types";
-import flickr from "../api/flickr";
-import { photoProps, photosAtom } from "../store/atoms";
+import { photoProps, photosAtom, photosData } from "../store/atoms";
 import { pageSelector, photosSelector } from "../store/selectors";
+import { RootStackScreenProps } from "../types";
 import Layout from "../constants/Layout";
+import flickr from "../api/flickr";
 
 const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
   const [tag, setTag] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const setPhotos = useSetRecoilState(photosAtom);
   const photos = useRecoilValue(photosSelector);
   const page = useRecoilValue(pageSelector);
 
-  const getPhotos = React.useCallback(async () => {
-    const { data } = await flickr.search(tag);
-    setPhotos(data);
-  }, [tag]);
+  const getPhotos = React.useCallback(
+    async (pg?: number) => {
+      if (tag) {
+        setLoading(true);
+        const { data } = await flickr.search(tag, pg);
+        const { photo, page } = data.photos;
+        setLoading(false);
+
+        pg
+          ? setPhotos((oldData) => {
+              // @ts-ignore
+              const old = oldData.photo;
+              return { page, photo: [...old, ...photo] };
+            })
+          : setPhotos({ photo, page });
+      }
+    },
+    [tag]
+  );
 
   React.useEffect(() => {
     const delay = setTimeout(() => {
       getPhotos();
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(delay);
   }, [tag]);
@@ -59,8 +76,13 @@ const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
         numColumns={2}
         data={photos}
         renderItem={renderPhotos}
+        onEndReached={() => getPhotos(page + 1)}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<Text>search to see images</Text>}
+        ListFooterComponent={
+          loading ? <ActivityIndicator color="#ffb300" size={"large"} /> : null
+        }
+        keyExtractor={(item, index) => item.id + index.toString()} //same image may appear in the next page too
       />
     </View>
   );
