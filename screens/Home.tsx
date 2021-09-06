@@ -16,18 +16,23 @@ import { pageSelector, photosSelector } from "../store/selectors";
 import Layout from "../constants/Layout";
 
 const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
+  const [tag, setTag] = React.useState("");
   const setPhotos = useSetRecoilState(photosAtom);
   const photos = useRecoilValue(photosSelector);
   const page = useRecoilValue(pageSelector);
 
   const getPhotos = React.useCallback(async () => {
-    const { data } = await flickr.search("nature");
+    const { data } = await flickr.search(tag);
     setPhotos(data);
-  }, []);
+  }, [tag]);
 
   React.useEffect(() => {
-    getPhotos();
-  }, []);
+    const delay = setTimeout(() => {
+      getPhotos();
+    }, 1000);
+
+    return () => clearTimeout(delay);
+  }, [tag]);
 
   const renderPhotos = ({ item }: { item: photoProps }) => {
     return (
@@ -41,13 +46,21 @@ const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
 
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} />
+      <TextInput
+        onChangeText={(tag) => {
+          setTag(tag);
+        }}
+        placeholder={"type to search images..."}
+        style={styles.input}
+        value={tag}
+      />
 
       <FlatList
+        numColumns={2}
         data={photos}
         renderItem={renderPhotos}
-        numColumns={2}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={<Text>search to see images</Text>}
       />
     </View>
   );
@@ -63,10 +76,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
   },
   input: {
     height: 56,
