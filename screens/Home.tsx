@@ -2,14 +2,15 @@ import * as React from "react";
 import { useSetRecoilState, useRecoilState, useRecoilValue } from "recoil";
 import {
   StyleSheet,
-  Text,
-  View,
   TextInput,
   FlatList,
   Image,
   ActivityIndicator,
   Pressable,
 } from "react-native";
+
+import { View, Text } from "../components/Themed";
+import Loading from "../components/Loading";
 
 import { photoProps, photosAtom, photosData } from "../store/atoms";
 import { pageSelector, photosSelector } from "../store/selectors";
@@ -47,7 +48,7 @@ const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
   React.useEffect(() => {
     const delay = setTimeout(() => {
       getPhotos();
-    }, 1000);
+    }, 700);
 
     return () => clearTimeout(delay);
   }, [tag]);
@@ -75,12 +76,12 @@ const Home = ({ navigation }: RootStackScreenProps<"Home">) => {
         numColumns={2}
         data={photos}
         renderItem={renderPhotos}
-        onEndReached={() => getPhotos(page + 1)}
         showsVerticalScrollIndicator={false}
-        ListEmptyComponent={<Text>search to see images</Text>}
-        ListFooterComponent={
-          loading ? <ActivityIndicator color="#ffb300" size={"large"} /> : null
-        }
+        onEndReachedThreshold={0.7}
+        onEndReached={() => getPhotos(page + 1)}
+        ListHeaderComponent={loading ? <Loading /> : null}
+        ListFooterComponent={photos && loading ? <Loading /> : null}
+        ListEmptyComponent={!loading ? <Text>search to see images</Text> : null}
         keyExtractor={(item, index) => item.id + index.toString()} //same image may appear in the next page too
       />
     </View>
@@ -94,7 +95,6 @@ const thumbWidth = (Layout.window.width - 60) / 2; // half width - (paddings + m
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     padding: 20,
   },

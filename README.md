@@ -1,8 +1,9 @@
 # flickrapp
+
 app to test Flick API
 
 expo tabs template used to speed up the process
-axios used for https reuests
+axios used for https requests
 recoil used as a minimal state management to get the job done
 
 You need yarn and expo-cli installed globally to run the project

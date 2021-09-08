@@ -9,11 +9,11 @@ export const pageSelector = selector<number>({
   },
 });
 
-export const photosSelector = selector<photoProps[]>({
+export const photosSelector = selector<photoProps[] | null>({
   key: "photos",
   get: ({ get }) => {
     let data = get(photosAtom);
-    // console.log(data)
+
     return data?.photo
       ? data.photo.map((img: photoProps) => {
           const { server, id, secret } = img;
@@ -22,6 +22,6 @@ export const photosSelector = selector<photoProps[]>({
             url: `https://live.staticflickr.com/${server}/${id}_${secret}.jpg`,
           };
         })
-      : [];
+      : null;
   },
 });
