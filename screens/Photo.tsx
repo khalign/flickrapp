@@ -1,5 +1,12 @@
 import * as React from "react";
-import { StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 
 import { RootStackScreenProps } from "../types";
 import Layout from "../constants/Layout";
@@ -23,7 +30,7 @@ const Photo = ({ navigation, route }: RootStackScreenProps<"Photo">) => {
     <View style={styles.container}>
       <Image source={{ uri: item.url }} style={styles.img} />
       {photo ? (
-        <>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.owner}>
             <Text style={styles.link}>
               {photo?.owner?.realname || photo?.owner?.username}
@@ -34,7 +41,7 @@ const Photo = ({ navigation, route }: RootStackScreenProps<"Photo">) => {
           <Text style={styles.title}>{photo?.title?._content}</Text>
 
           <Text>{photo?.description?._content}</Text>
-        </>
+        </ScrollView>
       ) : (
         <ActivityIndicator size={"large"} color="#ffb300" />
       )}
